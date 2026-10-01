@@ -18,6 +18,8 @@ yc vpc subnet create \
   --zone "$ZONE" \
   --range "$CIDR"
 
+SUBNET_ID=$(yc vpc subnet get "$PREFIX-subnet" --format json | jq -r '.id')
+
 yc compute instance create \
   --name "$PREFIX-app-1" \
   --zone "$ZONE" \
@@ -26,8 +28,8 @@ yc compute instance create \
   --core-fraction=20 \
   --memory=2 \
   --preemptible \
-  --create-boot-disk image-folder-id=standard-images,image-family="$IMAGE_FAMILY",type=network-hdd,size="$DISK_SIZE"
-  --network-interface subnet-name="$PREFIX-subnet",nat-ip-version=ipv4 \
+  --create-boot-disk image-folder-id=standard-images,image-family="$IMAGE_FAMILY",type=network-hdd,size="$DISK_SIZE" \
+  --network-interface subnet-id="$SUBNET_ID",nat-ip-version=ipv4 \
   --hostname "$PREFIX-app-1" \
   --ssh-key ~/.ssh/id_ed25519.pub \
   --labels created-by=cli
@@ -40,8 +42,8 @@ yc compute instance create \
   --core-fraction=20 \
   --memory=2 \
   --preemptible \
-  --create-boot-disk image-folder-id=standard-images,image-family="$IMAGE_FAMILY",type=network-hdd,size="$DISK_SIZE"
-  --network-interface subnet-name="$PREFIX-subnet",nat-ip-version=ipv4 \
+  --create-boot-disk image-folder-id=standard-images,image-family="$IMAGE_FAMILY",type=network-hdd,size="$DISK_SIZE" \
+  --network-interface subnet-id="$SUBNET_ID",nat-ip-version=ipv4 \
   --hostname "$PREFIX-app-2" \
   --ssh-key ~/.ssh/id_ed25519.pub \
   --labels created-by=cli
