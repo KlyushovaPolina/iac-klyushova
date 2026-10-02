@@ -50,3 +50,9 @@ sudo apt install -y nginx
 set +H
 sudo sed -i "s|Welcome to nginx!|labwork on $(hostname)|g" \
   /var/www/html/index.nginx-debian.html
+
+yc compute instance delete "$PREFIX-web-1"
+yc compute instance delete "$PREFIX-web-manual"
+
+yc vpc subnet delete "$PREFIX-subnet"
+yc vpc network delete "$PREFIX-net"
