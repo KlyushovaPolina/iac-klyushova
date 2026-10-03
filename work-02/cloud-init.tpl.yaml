@@ -14,11 +14,14 @@ packages:
   - nginx
 
 runcmd:
-  - mkfs.ext4 /dev/disk/by-id/virtio-data
-  - mkdir -p /mnt/data
-  - DISK_UUID=$(blkid -s UUID -o value /dev/disk/by-id/virtio-data)
-  - echo "UUID=$DISK_UUID /mnt/data ext4 defaults,nofail 0 2" >> /etc/fstab
-  - mount -a
+  - |
+    if [ -b /dev/disk/by-id/virtio-data ]; then
+      mkfs.ext4 /dev/disk/by-id/virtio-data
+      mkdir -p /mnt/data
+      DISK_UUID=$(blkid -s UUID -o value /dev/disk/by-id/virtio-data)
+      echo "UUID=$DISK_UUID /mnt/data ext4 defaults,nofail 0 2" >> /etc/fstab
+      mount -a
+    fi
 
   - sed -i 's/listen 80 default_server;/listen ${APP_PORT} default_server;/' /etc/nginx/sites-available/default
   - sed -i 's/listen \[::\]:80 default_server;/listen [::]:${APP_PORT} default_server;/' /etc/nginx/sites-available/default
