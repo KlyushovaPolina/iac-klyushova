@@ -20,7 +20,7 @@ delete_if_exists "load-balancer target-group" "$PREFIX-tg"
 
 yc compute instance list --format json |
   jq -r '.[].name' |
-  grep -E "^${PREFIX}-app-[0-9]+$" |
+  { grep -E "^${PREFIX}-app-[0-9]+$" || true; } |
   while read -r name; do
     delete_if_exists "compute instance" "$name"
   done
