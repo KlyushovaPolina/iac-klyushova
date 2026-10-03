@@ -8,10 +8,21 @@ CIDR_A=10.11.1.0/24
 CIDR_B=10.11.2.0/24
 APP_PORT=8003
 GREETING=labwork
-VM_COUNT=2
-DISK_SIZE=20
 BOOT_SIZE=15
 IMAGE_FAMILY=ubuntu-2404-lts
+
+VM_COUNT="${1:-2}"
+DISK_SIZE="${2:-20}"
+
+if ! [[ "$VM_COUNT" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Ошибка: количество машин должно быть положительным целым числом" >&2
+  exit 1
+fi
+
+if ! [[ "$DISK_SIZE" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Ошибка: размер диска должен быть положительным целым числом" >&2
+  exit 1
+fi
 
 echo "==> сеть и подсети"
 yc vpc network create --name "$PREFIX-net"
