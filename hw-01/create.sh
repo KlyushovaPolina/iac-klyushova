@@ -81,6 +81,10 @@ else
     --route "destination=0.0.0.0/0,gateway-id=$GW_ID"
 fi
 
+yc vpc subnet update \
+  --name "$PREFIX-subnet-a" \
+  --route-table-name "$ROUTE_TABLE_NAME"
+
 echo "==> файл настройки из шаблона"
 SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
