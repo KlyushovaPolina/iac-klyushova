@@ -55,6 +55,17 @@ else
     --zone "$ZONE_B" --range "$CIDR_B"
 fi
 
+echo "==> NAT-шлюз"
+
+NAT_NAME="$PREFIX-nat"
+
+if yc vpc gateway get "$NAT_NAME" >/dev/null 2>&1; then
+  echo "NAT-шлюз $NAT_NAME уже существует"
+else
+  yc vpc gateway create \
+    --name "$NAT_NAME"
+fi
+
 echo "==> файл настройки из шаблона"
 SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
