@@ -1,0 +1,22 @@
+#cloud-config
+
+users:
+  - name: student
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKLJu4QzrQfaIHwtRUASsfPAqUS1bjTChsmjZiMzQmCL prekrasnayapolyachka@gmail.com
+
+package_update: true
+
+packages:
+  - nginx
+
+runcmd:
+  - sed -i 's/listen 80 default_server;/listen 8003 default_server;/' /etc/nginx/sites-available/default
+  - sed -i 's/listen \[::\]:80 default_server;/listen [::]:8003 default_server;/' /etc/nginx/sites-available/default
+
+  - bash -c 'echo "labwork on $(hostname)" > /var/www/html/index.nginx-debian.html'
+  - nginx -t
+  - systemctl restart nginx
