@@ -89,7 +89,7 @@ echo "==> файл настройки из шаблона"
 SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
 envsubst '${APP_PORT} ${GREETING} ${SSH_KEY}' \
-  < work-02/cloud-init.tpl.yaml > work-02/cloud-init.yaml
+  < hw-01/cloud-init.tpl.yaml > hw-01/cloud-init.yaml
 
 echo "==> сервер приложения"
 
@@ -102,12 +102,12 @@ else
     --name "$APP_VM_NAME" \
     --zone "$ZONE_A" \
     --platform standard-v3 \
-    --cores=2  --core-fraction=20 --memory=2 \ 
+    --cores=2  --core-fraction=20 --memory=2 \
     --preemptible \
-    --create-boot-disk image-folder-id=standard-images, image-family="$IMAGE_FAMILY", type=network-hdd, size="$BOOT_SIZE" \ 
-    --network-interface subnet-name="$PREFIX-subnet-a" \ 
+    --create-boot-disk image-folder-id=standard-images,image-family="$IMAGE_FAMILY",type=network-hdd,size="$BOOT_SIZE" \
+    --network-interface subnet-name="$PREFIX-subnet-a" \
     --hostname "$APP_VM_NAME" \
-    --metadata-from-file user-data=hw-01/cloud-init.yaml 
+    --metadata-from-file user-data=hw-01/cloud-init.yaml
 fi
 
 echo "==> машины"
@@ -133,7 +133,7 @@ for i in $(seq 1 "$VM_COUNT"); do
     --create-boot-disk image-folder-id=standard-images,image-family="$IMAGE_FAMILY",type=network-hdd,size="$BOOT_SIZE" \
     --network-interface subnet-name="${SUBNETS[$idx]}",nat-ip-version=ipv4 \
     --hostname "$PREFIX-app-$i" \
-    --metadata-from-file user-data=work-02/cloud-init.yaml
+    --metadata-from-file user-data=hw-01/cloud-init.yaml
 done
 
 echo "==> целевая группа"
