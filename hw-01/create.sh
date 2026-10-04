@@ -66,6 +66,21 @@ else
     --name "$NAT_NAME"
 fi
 
+echo "==> таблица маршрутизации"
+
+ROUTE_TABLE_NAME="$PREFIX-rt"
+
+GW_ID=$(yc vpc gateway get "$NAT_NAME" --format json | jq -r '.id')
+
+if yc vpc route-table get "$ROUTE_TABLE_NAME" >/dev/null 2>&1; then
+  echo "Таблица маршрутизации $ROUTE_TABLE_NAME уже существует"
+else
+  yc vpc route-table create \
+    --name "$ROUTE_TABLE_NAME" \
+    --network-name "$PREFIX-net" \
+    --route "destination=0.0.0.0/0,gateway-id=$GW_ID"
+fi
+
 echo "==> файл настройки из шаблона"
 SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
