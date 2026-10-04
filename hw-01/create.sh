@@ -61,6 +61,25 @@ export APP_PORT GREETING SSH_KEY
 envsubst '${APP_PORT} ${GREETING} ${SSH_KEY}' \
   < work-02/cloud-init.tpl.yaml > work-02/cloud-init.yaml
 
+echo "==> сервер приложения"
+
+APP_VM_NAME="$PREFIX-app-private"
+
+if yc compute instance get "$APP_VM_NAME" >/dev/null 2>&1; then
+  echo "Сервер приложения $APP_VM_NAME уже существует"
+else
+  yc compute instance create \
+    --name "$APP_VM_NAME" \
+    --zone "$ZONE_A" \
+    --platform standard-v3 \
+    --cores=2  --core-fraction=20 --memory=2 \ 
+    --preemptible \
+    --create-boot-disk image-folder-id=standard-images, image-family="$IMAGE_FAMILY", type=network-hdd, size="$BOOT_SIZE" \ 
+    --network-interface subnet-name="$PREFIX-subnet-a" \ 
+    --hostname "$APP_VM_NAME" \
+    --metadata-from-file user-data=hw-01/cloud-init.yaml 
+fi
+
 echo "==> машины"
 ZONES=("$ZONE_A" "$ZONE_B")
 SUBNETS=("$PREFIX-subnet-a" "$PREFIX-subnet-b")
